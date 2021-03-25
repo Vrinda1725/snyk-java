@@ -1,5 +1,5 @@
 # FROM node:6-stretch
-FROM node:15.10
+FROM node:current-buster
 
 RUN mkdir /usr/src/goof
 RUN mkdir /tmp/extracted_files
