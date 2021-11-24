@@ -3,49 +3,48 @@ name: Node.js CI
 on: push
 
 jobs:
-    build:
-
+    build: 
         runs-on: ubuntu-latest
-
         steps:
             - uses: actions/checkout@v2
-            uses: actions/setup-node@v2
-            with:
+            - name: use node.js
+              uses: actions/setup-node@v2
+              with:
                 node-version: 14.x
 
             - name: Install snyk
-            run: npm install -g snyk
-            run: snyk auth $SNYK_TOKEN
+              run: npm install -g snyk
+              run: snyk auth $SNYK_TOKEN
 
             - name: check npm files
-                id: check_files
-                uses: andstor/file-existence-action@v1
-                with:
-                    files: "package.json, package-lock.json"
+              id: check_files
+              uses: andstor/file-existence-action@v1
+              with:
+                files: "package.json, package-lock.json"
 
             - name: npm snyk
-            if: steps.check_files.outputs.files_exists == 'true'
-            run: snyk test --json | snyk-to-html -o snyk_results.html
+              if: steps.check_files.outputs.files_exists == 'true'
+              run: snyk test --json | snyk-to-html -o snyk_results.html
 
             - name: check yarn files
-            if: steps.check_files.outputs.files_exists != 'true'
-                id: check_files
-                uses: andstor/file-existence-action@v1
-                with:
-                    files: "package.json, yarn.lock"
+              if: steps.check_files.outputs.files_exists != 'true'
+              id: check_files
+              uses: andstor/file-existence-action@v1
+              with:
+                files: "package.json, yarn.lock"
 
             - name: yarn snyk test
-            if: steps.check_files.outputs.files_exists == 'true'
-            run: snyk test --json | snyk-to-html -o snyk_results.html
+              if: steps.check_files.outputs.files_exists == 'true'
+              run: snyk test --json | snyk-to-html -o snyk_results.html
 
             - name: check no lock file
-            if: steps.check_files.outputs.files_exists != 'true'
-                id: check_files
-                uses: andstor/file-existence-action@v1
-                with:
-                    files: "package.json"
+              if: steps.check_files.outputs.files_exists != 'true'
+              id: check_files
+              uses: andstor/file-existence-action@v1
+              with:
+                files: "package.json"
 
             - name: install and snyk test
-            if: steps.check_files.outputs.files_exists == 'true'
-            run: npm install
-            run: snyk test --json | snyk-to-html -o snyk_results.html
+              if: steps.check_files.outputs.files_exists == 'true'
+              run: npm install
+              run: snyk test --json | snyk-to-html -o snyk_results.html
