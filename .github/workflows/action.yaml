@@ -27,7 +27,7 @@ jobs:
 
             - name: npm snyk test
               if: steps.check_files_npm.outputs.files_exists == 'true'
-              run: snyk test
+              run: snyk test -d
 
             - name: check yarn files
               if: steps.check_files_npm.outputs.files_exists != 'true'
@@ -38,7 +38,7 @@ jobs:
 
             - name: yarn snyk test
               if: steps.check_files_yarn.outputs.files_exists == 'true'
-              run: snyk test
+              run: snyk test -d
 
             - name: check no lock file
               if: steps.check_files_yarn.outputs.files_exists != 'true'
@@ -51,4 +51,4 @@ jobs:
               if: steps.check_files.outputs.files_exists == 'true'
               run: npm install
             - name: snyk test
-              run: snyk test
+              run: snyk test -d
