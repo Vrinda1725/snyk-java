@@ -15,7 +15,7 @@ jobs:
             - name: Install snyk
               run: npm install -g snyk
             - name: authenticate snyk
-              run: snyk auth $SNYK_TOKEN
+              run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
             - name: check npm files
               id: check_files_npm
