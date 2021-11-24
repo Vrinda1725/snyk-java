@@ -25,12 +25,12 @@ jobs:
               with:
                 files: "package.json, package-lock.json"
 
-            - name: npm snyk
+            - name: npm snyk test
               if: steps.check_files_npm.outputs.files_exists == 'true'
-              run: snyk test --json | snyk-to-html -o snyk_results.html
+              run: snyk test
 
             - name: check yarn files
-              if: steps.check_files.outputs.files_exists != 'true'
+              if: steps.check_files_npm.outputs.files_exists != 'true'
               id: check_files_yarn
               uses: andstor/file-existence-action@v1
               with:
@@ -38,10 +38,10 @@ jobs:
 
             - name: yarn snyk test
               if: steps.check_files_yarn.outputs.files_exists == 'true'
-              run: snyk test --json | snyk-to-html -o snyk_results.html
+              run: snyk test
 
             - name: check no lock file
-              if: steps.check_files.outputs.files_exists != 'true'
+              if: steps.check_files_yarn.outputs.files_exists != 'true'
               id: check_files
               uses: andstor/file-existence-action@v1
               with:
@@ -51,4 +51,4 @@ jobs:
               if: steps.check_files.outputs.files_exists == 'true'
               run: npm install
             - name: snyk test
-              run: snyk test --json | snyk-to-html -o snyk_results.html
+              run: snyk test
