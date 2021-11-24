@@ -18,24 +18,24 @@ jobs:
               run: snyk auth $SNYK_TOKEN
 
             - name: check npm files
-              id: check_files
+              id: check_files_npm
               uses: andstor/file-existence-action@v1
               with:
                 files: "package.json, package-lock.json"
 
             - name: npm snyk
-              if: steps.check_files.outputs.files_exists == 'true'
+              if: steps.check_files_npm.outputs.files_exists == 'true'
               run: snyk test --json | snyk-to-html -o snyk_results.html
 
             - name: check yarn files
               if: steps.check_files.outputs.files_exists != 'true'
-              id: check_files
+              id: check_files_yarn
               uses: andstor/file-existence-action@v1
               with:
                 files: "package.json, yarn.lock"
 
             - name: yarn snyk test
-              if: steps.check_files.outputs.files_exists == 'true'
+              if: steps.check_files_yarn.outputs.files_exists == 'true'
               run: snyk test --json | snyk-to-html -o snyk_results.html
 
             - name: check no lock file
