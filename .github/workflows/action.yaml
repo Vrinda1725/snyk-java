@@ -1,6 +1,10 @@
-name: Node.js CI
+name: Snyk security test CI
 
-on: push
+on:
+  workflow_run:
+    workflows: ["Main"]
+    types:
+      - completed
 
 jobs:
     build: 
@@ -23,11 +27,8 @@ jobs:
               with:
                 files: "package.json, package-lock.json"
 
-            - name: npm install
-              if: steps.check_files_npm.outputs.files_exists == 'true'
-              run: npm install
             - name: npm snyk test
-              run: snyk test -d --json-file-output=snyk_results.json || true
+              run: snyk test -d || true
 
             - name: check yarn files
               if: steps.check_files_npm.outputs.files_exists != 'true'
@@ -38,7 +39,7 @@ jobs:
 
             - name: yarn snyk test
               if: steps.check_files_yarn.outputs.files_exists == 'true'
-              run: snyk test -d --json-file-output=snyk_results.json || true
+              run: snyk test -d || true
 
             - name: check no lock file
               if: steps.check_files_yarn.outputs.files_exists != 'true'
@@ -51,4 +52,4 @@ jobs:
               if: steps.check_files.outputs.files_exists == 'true'
               run: npm install
             - name: snyk test
-              run: snyk test -d --json-file-output=snyk_results.json || true
+              run: snyk test -d || true
