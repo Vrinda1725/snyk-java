@@ -2,7 +2,7 @@ name: Snyk security test CI
 
 on:
   workflow_run:
-    workflows: ["Main"]
+    workflows: ["master"]
     types:
       - completed
 
