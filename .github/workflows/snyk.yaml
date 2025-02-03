@@ -22,7 +22,8 @@ jobs:
           node-version: 18  # Change this based on your project requirements
 
       - name: Install Dependencies
-        run: npm install  # Ensures all dependencies, including lodash, are installed
+        run: npm install --legacy-peer-deps
+
 
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
