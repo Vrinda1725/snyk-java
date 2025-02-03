@@ -24,18 +24,13 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Upgrade Snyk CLI
+        run: npm install -g snyk@latest
 
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        with:
-          command: test
+      - name: Authenticate with Snyk
+        run: snyk auth $SNYK_TOKEN
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  # Ensure this secret is set in GitHub
+         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      - name: Monitor project with Snyk
-        uses: snyk/actions/node@master
-        with:
-          command: monitor
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-          
+      - name: Run Snyk Security Scan
+        run: snyk test
