@@ -21,16 +21,13 @@ jobs:
         with:
           node-version: 18  # Change this based on your project requirements
 
-      - name: Install Dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Upgrade Snyk CLI
-        run: npm install -g snyk@latest
-
       - name: Authenticate with Snyk
         run: snyk auth $SNYK_TOKEN
         env:
          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
 
       - name: Run Snyk Security Scan
         run: snyk test
