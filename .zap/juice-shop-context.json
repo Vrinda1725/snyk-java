@@ -1,0 +1,25 @@
+{
+  "name": "JuiceShopContext",
+  "urls": ["https://juice-shop.herokuapp.com"],
+  "authentication": {
+    "type": "formBasedAuthentication",
+    "loginPageUrl": "https://juice-shop.herokuapp.com/#/login",
+    "loginRequest": {
+      "method": "POST",
+      "postData": "email={{USERNAME}}&password={{PASSWORD}}",
+      "loginIndicator": "Your Basket"
+    }
+  },
+  "users": [
+    {
+      "name": "AdminUser",
+      "credentials": {
+        "username": "${{ secrets.ZAP_AUTH_USERNAME }}",
+        "password": "${{ secrets.ZAP_AUTH_PASSWORD }}"
+      }
+    }
+  ],
+  "sessionManagement": {
+    "method": "cookieBasedSessionManagement"
+  }
+}
