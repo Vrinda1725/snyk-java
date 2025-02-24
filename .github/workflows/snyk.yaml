@@ -3,7 +3,7 @@ name: OWASP ZAP Authenticated Scan - Juice Shop
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch: # Allows manual trigger
 
 jobs:
