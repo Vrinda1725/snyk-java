@@ -1,36 +1,29 @@
-name: Snyk Security Scan
+name: OWASP ZAP Authenticated Scan - Juice Shop
 
 on:
   push:
     branches:
-      - master
-  pull_request:
-    branches:
-      - master
+      - main
+  workflow_dispatch: # Allows manual trigger
 
 jobs:
-  security:
+  zap_scan:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Run OWASP ZAP Full Scan with Authentication
+        uses: zaproxy/action-full-scan@v0.6.0
         with:
-          node-version: 18  # Change this based on your project requirements
-          
-      - name: Install Snyk CLI
-        run: npm install -g snyk  # Install Snyk globally
+          target: ${{ secrets.ZAP_TARGET_URL }}
+          context: .zap/juice-shop-context.json
+          fail_action: true # Fails if critical vulnerabilities are found
+          cmd_options: '-config api.key=${{ secrets.ZAP_API_KEY }}'
 
-      - name: Authenticate with Snyk
-        run: snyk auth $SNYK_TOKEN
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      - name: Install Dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Run Snyk Test
-        run: snyk test
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-report
+          path: report_html.html
