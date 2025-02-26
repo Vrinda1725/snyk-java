@@ -18,24 +18,41 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Debug Context File
-        run: ls -lR .zap && cat .zap/juice-shop-context.json
+      - name: Install OWASP ZAP
+        run: |
+          mkdir -p /zap
+          cd /zap
+          wget -N https://github.com/zaproxy/zaproxy/releases/download/v2.9.0/ZAP_2.9.0_Linux.tar.gz
+          tar -zxvf ZAP_2.9.0_Linux.tar.gz
+          rm ZAP_2.9.0_Linux.tar.gz
+          echo 'export PATH_ZAP_SH=/zap/ZAP_2.9.0/zap.sh' >> ~/.bashrc
+          echo 'export ZAP_PORT=8090' >> ~/.bashrc
+          source ~/.bashrc
 
-      - name: Copy Context File to Working Directory
-        run: cp .zap/juice-shop-context.json juice-shop-context.json
+      - name: Copy ZAP Context File
+        run: |
+          mkdir -p /zap/wrk
+          cp .zap/juice-shop-context.json /zap/wrk/juice-shop-context.json
 
-      - name: Run OWASP ZAP Full Scan with Authentication
-        uses: zaproxy/action-full-scan@v0.6.0
+      - name: Start ZAP Daemon
+        run: |
+          /zap/ZAP_2.9.0/zap.sh -daemon -host 0.0.0.0 -port 8090 \
+          -config api.key=${{ secrets.ZAP_API_KEY }} \
+          -config context.file=/zap/wrk/juice-shop-context.json > /dev/null &
+
+      - name: Wait for ZAP to Start
+        uses: jakejarvis/wait-action@master
         with:
-          target: ${{ secrets.ZAP_TARGET_URL }}
-          fail_action: true
-          cmd_options: >
-            -config api.key=${{ secrets.ZAP_API_KEY }}
-            -config context.file=/zap/wrk/juice-shop-context.json
+          time: '30s'
+
+      - name: Run ZAP Full Scan
+        run: |
+          /zap/ZAP_2.9.0/zap.sh -cmd -quickurl=${{ secrets.ZAP_TARGET_URL }} \
+          -quickprogress -config api.key=${{ secrets.ZAP_API_KEY }} \
+          -config context.file=/zap/wrk/juice-shop-context.json
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
-          path: report_html.html
-
+          path: /zap/ZAP_2.9.0/report_html.html
