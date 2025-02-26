@@ -14,17 +14,24 @@ permissions:
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Debug Context File
+        run: ls -lR .zap && cat .zap/juice-shop-context.json
+
+      - name: Inject Secrets into Context File
+        run: |
+          sed -i 's|${{ secrets.ZAP_AUTH_USERNAME }}|'${{ secrets.ZAP_AUTH_USERNAME }}'|g' .zap/juice-shop-context.json
+          sed -i 's|${{ secrets.ZAP_AUTH_PASSWORD }}|'${{ secrets.ZAP_AUTH_PASSWORD }}'|g' .zap/juice-shop-context.json
 
       - name: Run OWASP ZAP Full Scan with Authentication
         uses: zaproxy/action-full-scan@v0.6.0
         with:
           target: ${{ secrets.ZAP_TARGET_URL }}
-          context: .zap/juice-shop-context.json
-          fail_action: true # Fails if critical vulnerabilities are found
+          context: /zap/wrk/.zap/juice-shop-context.json
+          fail_action: true
           cmd_options: '-config api.key=${{ secrets.ZAP_API_KEY }}'
 
       - name: Upload ZAP Report
