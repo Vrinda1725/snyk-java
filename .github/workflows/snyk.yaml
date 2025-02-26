@@ -21,20 +21,21 @@ jobs:
       - name: Debug Context File
         run: ls -lR .zap && cat .zap/juice-shop-context.json
 
-      - name: Inject Secrets into Context File
-        run: |
-          sed -i 's|${{ secrets.ZAP_AUTH_USERNAME }}|'${{ secrets.ZAP_AUTH_USERNAME }}'|g' .zap/juice-shop-context.json
-          sed -i 's|${{ secrets.ZAP_AUTH_PASSWORD }}|'${{ secrets.ZAP_AUTH_PASSWORD }}'|g' .zap/juice-shop-context.json
+      - name: Copy Context File to Working Directory
+        run: cp .zap/juice-shop-context.json juice-shop-context.json
 
       - name: Run OWASP ZAP Full Scan with Authentication
         uses: zaproxy/action-full-scan@v0.6.0
         with:
           target: ${{ secrets.ZAP_TARGET_URL }}
           fail_action: true
-          cmd_options: '-config api.key=${{ secrets.ZAP_API_KEY }} -config context.file=/zap/wrk/.zap/juice-shop-context.json'
+          cmd_options: >
+            -config api.key=${{ secrets.ZAP_API_KEY }}
+            -config context.file=/zap/wrk/juice-shop-context.json
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
           path: report_html.html
+
