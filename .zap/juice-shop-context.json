@@ -14,7 +14,12 @@
       }
     ],
     "authentication": {
-      "method": "manualAuthentication"
+      "method": "formBasedAuthentication",
+      "parameters": {
+        "loginPageUrl": "https://juice-shop.herokuapp.com/#/login",
+        "loginRequestData": "email='REPLACE_WITH_USERNAME'&password='REPLACE_WITH_PASSWORD'&rememberMe=true",
+        "loginRequestMethod": "POST"
+      }
     },
     "sessionManagement": {
       "method": "cookieBasedSessionManagement"

@@ -34,7 +34,7 @@ jobs:
       - name: Run ZAP Full Scan with Authentication
         run: |
           docker run --rm \
-            -v $(pwd):/zap/wrk:rw \
+            -v $(pwd)/.zap:/zap/wrk/.zap:rw \
             --network=host \
             ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py \
             -t ${{ secrets.ZAP_TARGET_URL }} \
