@@ -25,8 +25,8 @@ jobs:
 
       - name: Inject Secrets into Context File
         run: |
-          sed -i "s/REPLACE_WITH_USERNAME/${{ secrets.ZAP_USER }}/g" .zap/juice-shop-context.json
-          sed -i "s/REPLACE_WITH_PASSWORD/${{ secrets.ZAP_PASSWORD }}/g" .zap/juice-shop-context.json
+          sed -i "s/REPLACE_WITH_USERNAME/${{ secrets.ZAP_AUTH_USERNAME }}/g" .zap/juice-shop-context.json
+          sed -i "s/REPLACE_WITH_PASSWORD/${{ secrets.ZAP_AUTH_PASSWORD }}/g" .zap/juice-shop-context.json
 
       - name: Debug Context File (Optional)
         run: cat .zap/juice-shop-context.json
@@ -41,7 +41,7 @@ jobs:
             -J report_json.json \
             -w report_md.md \
             -r report_html.html \
-            -n /zap/wrk/.zap/juice-shop-context.json \
+            -n .zap/juice-shop-context.json \
             -U ${{ secrets.ZAP_AUTH_USERNAME }} \
             -z "
                 -config api.key=${{ secrets.ZAP_API_KEY }} 
