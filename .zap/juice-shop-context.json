@@ -1,25 +1,33 @@
 {
-  "name": "JuiceShopContext",
-  "urls": ["https://juice-shop.herokuapp.com"],
-  "authentication": {
-    "type": "formBasedAuthentication",
-    "loginPageUrl": "https://juice-shop.herokuapp.com/#/login",
-    "loginRequest": {
-      "method": "POST",
-      "postData": "email={{USERNAME}}&password={{PASSWORD}}",
-      "loginIndicator": "Your Basket"
-    }
-  },
-  "users": [
-    {
-      "name": "AdminUser",
-      "credentials": {
-        "username": "${{ secrets.ZAP_AUTH_USERNAME }}",
-        "password": "${{ secrets.ZAP_AUTH_PASSWORD }}"
+  "context": {
+    "id": 1,
+    "name": "Juice Shop Context",
+    "description": "Context for OWASP Juice Shop Authenticated Scan",
+    "includeInContext": [
+      {
+        "regex": "https://juice-shop.herokuapp.com.*"
       }
-    }
-  ],
-  "sessionManagement": {
-    "method": "cookieBasedSessionManagement"
+    ],
+    "excludeFromContext": [
+      {
+        "regex": "https://juice-shop.herokuapp.com/logout.*"
+      }
+    ],
+    "authentication": {
+      "method": "manualAuthentication"
+    },
+    "sessionManagement": {
+      "method": "cookieBasedSessionManagement"
+    },
+    "users": [
+      {
+        "id": 1,
+        "name": "test-user",
+        "credentials": {
+          "username": "REPLACE_WITH_USERNAME",
+          "password": "REPLACE_WITH_PASSWORD"
+        }
+      }
+    ]
   }
 }
