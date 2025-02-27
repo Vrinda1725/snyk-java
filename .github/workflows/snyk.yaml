@@ -5,6 +5,7 @@ on:
     branches:
       - master
   workflow_dispatch: # Allows manual trigger
+
 permissions:
   contents: read    
   issues: write    
@@ -22,18 +23,24 @@ jobs:
       - name: Pull OWASP ZAP Docker Image
         run: docker pull ghcr.io/zaproxy/zaproxy:stable
 
-      - name: Run ZAP Full Scan
+      - name: Run ZAP Full Scan with Authentication
         run: |
           docker run --rm \
             -v $(pwd):/zap/wrk:rw \
             --network=host \
             ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py \
-            -t ${{ secrets.TARGET_URL }} \
+            -t ${{ secrets.ZAP_TARGET_URL }} \
             -J report_json.json \
             -w report_md.md \
             -r report_html.html \
-            -config api.key=${{ secrets.ZAP_API_KEY }} \
-            -config context.file=/zap/wrk/.zap/juice-shop-context.json
+            -n /zap/wrk/.zap/juice-shop-context.json \
+            -U ${{ secrets.ZAP_AUTH_USERNAME }} \
+            -z "
+                -config api.key=${{ secrets.ZAP_API_KEY }} 
+                -config auth.method=manual 
+                -config auth.username=${{ secrets.ZAP_AUTH_USERNAME }} 
+                -config auth.password=${{ secrets.ZAP_AUTH_PASSWORD }}
+            "
 
       - name: Upload ZAP Reports
         uses: actions/upload-artifact@v4
