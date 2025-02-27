@@ -3,7 +3,7 @@ name: OWASP ZAP Scan
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch: # Allows manual trigger
 
 permissions:
@@ -15,10 +15,10 @@ jobs:
   zap_scan:
     runs-on: ubuntu-latest
     env:
-      TARGET_URL: "http://testphp.vulnweb.com/"
-      LOGIN_URL: "http://testphp.vulnweb.com/login.php"
-      ZAP_USERNAME: "test"
-      ZAP_PASSWORD: "test"
+      TARGET_URL: "https://juice-shop.herokuapp.com/#/"
+      LOGIN_URL: "https://juice-shop.herokuapp.com/#/login"
+      ZAP_USERNAME: "admin@juice-sh.op"
+      ZAP_PASSWORD: "admin123"
 
     steps:
       - name: Checkout Repository
