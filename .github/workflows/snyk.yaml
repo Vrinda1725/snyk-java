@@ -41,6 +41,7 @@ jobs:
             -J report_json.json \
             -w report_md.md \
             -r report_html.html \
+            -n /zap/wrk/.zap/juice-shop-context.json \
             -U ${{ secrets.ZAP_AUTH_USERNAME }} \
             -z "
                 -config api.key=${{ secrets.ZAP_API_KEY }} 
