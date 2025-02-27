@@ -23,6 +23,14 @@ jobs:
       - name: Pull OWASP ZAP Docker Image
         run: docker pull ghcr.io/zaproxy/zaproxy:stable
 
+      - name: Inject Secrets into Context File
+        run: |
+          sed -i "s/REPLACE_WITH_USERNAME/${{ secrets.ZAP_USER }}/g" .zap/juice-shop-context.json
+          sed -i "s/REPLACE_WITH_PASSWORD/${{ secrets.ZAP_PASSWORD }}/g" .zap/juice-shop-context.json
+
+      - name: Debug Context File (Optional)
+        run: cat .zap/juice-shop-context.json
+
       - name: Run ZAP Full Scan with Authentication
         run: |
           docker run --rm \
