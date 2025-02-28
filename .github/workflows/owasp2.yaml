@@ -3,8 +3,8 @@ name: OWASP ZAP Scan
 on:
   push:
     branches:
-      - main
-  workflow_dispatch: # Allows manual trigger
+      - master
+
 
 permissions:
   contents: read    
@@ -45,6 +45,7 @@ jobs:
             -t $TARGET_URL \
             -g gen.conf \
             -r /zap/wrk/report.html \
+            -J /zap/wrk/report_json.json \
             -I \
             --hook=/zap/auth_hook.py \
             -d \
@@ -52,17 +53,30 @@ jobs:
 
       - name: Check if ZAP Report was generated
         run: |
-          docker exec owasp sh -c "if [ -f /zap/wrk/report.html ]; then echo 'Report generated'; else echo 'Report NOT generated'; exit 1; fi"
+          docker exec owasp sh -c "if [ -f /zap/wrk/report_json.json ]; then echo 'Report generated'; else echo 'Report NOT generated'; exit 1; fi"
 
-      - name: Copy Report to Runner
+      - name: Copy Reports to Runner
         run: |
           docker cp owasp:/zap/wrk/report.html .
+          docker cp owasp:/zap/wrk/report_json.json .
+
+      - name: Convert ZAP JSON Report to SARIF
+        uses: zaproxy/action-full-scan@v0.2.0
+        with:
+          format: "sarif"
+          output: "report_sarif.json"
 
       - name: Upload ZAP Report as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
           path: report.html
+
+      - name: Upload SARIF Report to GitHub Security Tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: report_sarif.json
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cleanup OWASP ZAP container
         if: always()
