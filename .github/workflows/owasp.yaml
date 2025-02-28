@@ -3,7 +3,7 @@ name: OWASP ZAP Scan
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch: # Allows manual trigger
 
 permissions:
